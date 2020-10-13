@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="MorphTaggerPlugin" default="all" basedir="." >
+
+    <property name="deprecation.mode" value="true"/>
+    <property name="debug.mode" value="true"/>
+    <property name="build.dir" value="${basedir}/build" />
+    <property name="classes.dir" value="${basedir}/classes" />
+    <property name="classes.test.dir" value="${basedir}/testclasses" />
+    <property name="test.report.dir" value="${basedir}/test-report/" />    
+    <property name="test.results.dir" value="${basedir}/test-results/" />        
+    
+    <property name="lib.dir" value="${basedir}/lib"/>
+
+    <property name="build.archive.name" value="ru-morph-tagger.zip" />
+    <property name="jar.file" value="ru-morph-tagger.jar" />    
+    
+    <property name="emma.coverage.dir" value="${basedir}/emma"/>
+    <property name="tools.dir" value="${basedir}/tools"/>
+
+    <property name="src.dir" value="${basedir}/src"/>
+
+    <!-- Sources and target version -->
+    <property name="compile.target.version" value="1.5"/>
+    <property name="sources.target.version" value="1.5"/>
+
+    <target name="prepare.build" depends="make.jar" >
+
+        <description>Prepare build</description>
+	</target>
+	
+    <!-- copy all needed files -->
+    <target name="make.build" depends="prepare.build">
+        <description>Zip distribution</description>
+        <delete>
+            <fileset dir="${build.dir}">
+                <include name="${build.archive.name}"/>
+            </fileset>
+        </delete>
+        <copy file="${basedir}/conf/creole.xml" todir="${build.dir}" />
+		<zip destfile="${basedir}/build/${build.archive.name}"
+		       basedir="${basedir}/build"/>
+    </target>
+
+<!-- Main targets -->
+    <path id="project.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+    <path id="test.classpath">
+        <path refid="project.classpath" />
+        <pathelement location="${classes.dir}" />
+        <pathelement location="${classes.test.dir}" />
+    </path>
+
+    <target name="all" depends="make.build"/>
+
+    <target name="make.jar" depends="compile.project">
+
+        <description>Produces .jar files</description>
+
+        <jar basedir="${classes.dir}" destfile="${build.dir}/${jar.file}" >
+            <include name="ru/itbrains/**/*.class" />
+        </jar>
+        
+        
+    </target>
+
+    <target name="compile.project" depends="prepare" >
+        <javac debug="${debug.mode}" deprecation="${deprecation.mode}"
+               srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               target="${compile.target.version}"
+               source="${sources.target.version}"
+               classpathref="project.classpath"
+               encoding="utf-8"/>
+
+    </target>
+
+    <target name="prepare">
+        <mkdir dir="${classes.dir}" />
+        <mkdir dir="${build.dir}" />                
+    </target>
+    
+    <target name="prepare.test">
+        <mkdir dir="${classes.test.dir}" />
+        <mkdir dir="${test.report.dir}" />            
+        <mkdir dir="${test.results.dir}" />                    
+        <mkdir dir="${emma.coverage.dir}" />                            
+        <copy todir="${classes.test.dir}"  >
+            <fileset dir="${basedir}/tests" excludes="**/*.java" /> 
+        </copy>
+    </target>
+
+    <target name="clean">
+        <delete dir="${classes.dir}" />
+        <delete dir="${classes.test.dir}" />        
+        <delete dir="${build.dir}" />
+        <delete dir="${test.report.dir}" />
+        <delete dir="${test.results.dir}" />        
+        <delete dir="${emma.coverage.dir}" />                
+        <delete dir="${basedir}/generated" />
+        <delete dir="${basedir}/code-review}" />                
+    </target>
+    
+    
+<!-- Test targets -->
+
+    <target name="compile.test" depends="prepare.test, compile.project">
+        <javac debug="${debug.mode}" deprecation="${deprecation.mode}"
+               srcdir="${basedir}/tests"
+               destdir="${classes.test.dir}"
+               classpathref="test.classpath"  />
+
+    </target>
+
+
+    <target name="run.tests" depends="compile.test">
+    <!-- direct tests run -->
+        <junit printsummary="yes"  dir="${basedir}" fork="yes">
+            <classpath> 
+                <path refid="test.classpath" />
+ <!--                <path refid="emma.lib" />   -->
+ <!--               <pathelement location="${classes.test.dir}/com/pingidentity/sts/tests/impl" />  -->
+            </classpath> 
+
+            <batchtest todir="${test.results.dir}" haltonfailure="no">
+                <fileset  dir="${classes.test.dir}">
+                    <include name="**/*.*"/>
+                    <exclude name="**/SOAPTest.*"/>
+                    <exclude name="**/TestConstants.*"/>
+                    <exclude name="**/TestUtil.*"/>
+                    <exclude name="**/STSTest.*"/>
+                </fileset>
+                <formatter type="xml" />
+            </batchtest>
+            
+        </junit>
+    </target>
+    
+    <target name="test.report">
+        <junitreport todir="${test.report.dir}">
+            <fileset dir="${test.results.dir}" includes="TEST-*.xml" />
+            <report todir="${test.report.dir}" format="frames" />
+        </junitreport>    
+    </target>
+                
+</project>

@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<CREOLE-DIRECTORY>
+    <CREOLE>
+        <!-- Clear annotations PR -->
+        <RESOURCE>
+            <NAME>Document Reset PR</NAME>
+            <CLASS>gate.creole.annotdelete.AnnotationDeletePR</CLASS>
+            <COMMENT>Document cleaner</COMMENT>
+            <PARAMETER NAME="document" RUNTIME="true">gate.Document</PARAMETER>
+            <PARAMETER NAME="annotationTypes" RUNTIME="true" OPTIONAL="true"
+            ITEM_CLASS_NAME="java.lang.String"> java.util.ArrayList</PARAMETER>
+            <PARAMETER NAME="setsToKeep" RUNTIME="true" OPTIONAL="true"
+            ITEM_CLASS_NAME="java.lang.String"> java.util.ArrayList</PARAMETER>
+        </RESOURCE>
+        
+        <!-- MyStem - MorphTagger-->
+        <RESOURCE>
+            <NAME>Russian MorphTagger</NAME>
+            <CLASS>ru.itbrains.gate.morph.MorphTagger</CLASS>
+            <JAR>morph.jar</JAR> 
+            <COMMENT>MorphTagger for russian language, based on MyStem Yandex' parser</COMMENT>
+            <!-- Description of parameter -->
+            <PARAMETER NAME="document" COMMENT="The document to be parsed" RUNTIME="true">gate.Document</PARAMETER>
+        </RESOURCE>
+
+
+
+        <!-- Unicode tokeniser
+            (Depends on me: English tokenizer) -->
+        <RESOURCE>
+            <NAME>GATE Unicode Tokeniser</NAME>
+            <CLASS>gate.creole.tokeniser.SimpleTokeniser</CLASS>
+            <COMMENT>A customisable Unicode tokeniser.</COMMENT>
+            <PARAMETER NAME="document" COMMENT="The document to be tokenised"
+                RUNTIME="true">gate.Document</PARAMETER>
+            <PARAMETER NAME="annotationSetName" RUNTIME="true"
+                COMMENT="The annotation set to be used for the generated annotations"
+                OPTIONAL="true">java.lang.String</PARAMETER>
+            <PARAMETER DEFAULT="resources/tokeniser/DefaultTokeniser.rules"
+                COMMENT="The URL for the rules file" SUFFIXES="rules" NAME="rulesURL">
+        java.net.URL</PARAMETER>
+            <PARAMETER DEFAULT="UTF-8"
+                COMMENT="The encoding used for reading the definitions" NAME="encoding">
+        java.lang.String</PARAMETER>
+            <ICON>shefTokeniser.gif</ICON>
+        </RESOURCE>
+
+        <!-- EnglishTokeniser
+            (Depends on me: MorphTagger -->
+        <RESOURCE>
+            <NAME>ANNIE English Tokeniser</NAME>
+            <CLASS>gate.creole.tokeniser.DefaultTokeniser</CLASS>
+            <COMMENT>A customisable English tokeniser.</COMMENT>
+            <PARAMETER NAME="document" COMMENT="The document to be tokenised"
+                RUNTIME="true">gate.Document</PARAMETER>
+            <PARAMETER NAME="annotationSetName" RUNTIME="true"
+                COMMENT="The annotation set to be used for the generated annotations"
+                OPTIONAL="true">java.lang.String</PARAMETER>
+            <PARAMETER NAME="tokeniserRulesURL"
+                DEFAULT="resources/tokeniser/DefaultTokeniser.rules"
+                COMMENT="The URL for the rules file" SUFFIXES="rules">
+        java.net.URL</PARAMETER>
+            <PARAMETER NAME="transducerGrammarURL"
+                DEFAULT="resources/tokeniser/postprocess.jape"
+                COMMENT="The URL for the postprocessing transducer" SUFFIXES="jape">
+        java.net.URL</PARAMETER>
+            <PARAMETER NAME="encoding"
+                COMMENT="The encoding used for reading the definitions" DEFAULT="UTF-8">
+        java.lang.String</PARAMETER>
+            <ICON>shefTokeniser.gif</ICON>
+        </RESOURCE>
+
+    <!-- JapeTransducer
+         (Depends on me: English tokenizer) -->
+    <RESOURCE>
+        <NAME>Jape Transducer</NAME>
+        <CLASS>gate.creole.Transducer</CLASS>
+        <COMMENT>A module for executing Jape grammars</COMMENT>
+        <PARAMETER NAME="document" RUNTIME="true"
+            COMMENT="The document to be processed">gate.Document</PARAMETER>
+        <PARAMETER NAME="inputASName" RUNTIME="true"
+            COMMENT="The annotation set to be used as input for the transducer"
+            OPTIONAL="true">java.lang.String</PARAMETER>
+        <PARAMETER NAME="outputASName" RUNTIME="true"
+            COMMENT="The annotation set to be used as output for the transducer"
+            OPTIONAL="true">java.lang.String</PARAMETER>
+        <PARAMETER NAME="grammarURL"
+            DEFAULT="resources/transducer/grammars/main.jape"
+            COMMENT="The URL to the grammar file"
+            OPTIONAL="true"
+            SUFFIXES="jape">java.net.URL</PARAMETER>
+        <PARAMETER NAME="encoding" DEFAULT="windows-1251" OPTIONAL="true"
+            COMMENT="The encoding used for reading the grammar">
+        java.lang.String</PARAMETER>
+        <PARAMETER NAME="ontology"
+            COMMENT="The ontology to be used by this transducer"
+            OPTIONAL="true">gate.creole.ontology.Ontology</PARAMETER>
+    </RESOURCE>
+
+    </CREOLE>
+</CREOLE-DIRECTORY>

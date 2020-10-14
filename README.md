@@ -88,7 +88,7 @@ Replace `./plugin/lib/gate-commons.jar` and `./plugin/lib/gate.jar` with desired
     * vocative
 4. `multiplicity`
     * singular
-    *plural
+    * plural
 5. `gender`
     * feminine
     * masculine
